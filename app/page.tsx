@@ -3,7 +3,6 @@ import CompanionsList from '@/components/CompanionsList'
 import CTA from '@/components/CTA'
 import { recentSessions } from '@/constants'
 
-
 const Page = () => {
   return (
     <main>
