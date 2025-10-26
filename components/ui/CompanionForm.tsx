@@ -37,6 +37,8 @@ import {
 } from "@/components/ui/select"
 import { subjects } from "@/constants"
 import { Textarea } from "@/components/ui/textarea"
+import { createCompanion } from "@/assets/lib/actions/companion.actions"
+import { redirect } from "next/navigation"
 
 
 
@@ -63,8 +65,16 @@ function CompanionForm() {
     },
   })
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data)
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    const companion = await createCompanion(data);
+
+    if (companion) {
+      redirect(`/companions/${companion.id}`);
+    } else {
+      console.log("Falied to create a companion")
+      redirect('/');
+    }
+
   }
 
   return (
