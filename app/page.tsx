@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getAllCompanions, getRecentSessions } from '@/assets/lib/actions/companion.actions'
 import { getSubjectColor } from '@/assets/lib/utils'
 import CompanionCard from '@/components/CompanionCard'
