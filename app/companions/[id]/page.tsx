@@ -10,28 +10,52 @@ interface CompanionSessionPageProps {
 
 const CompanionSession = async ({ params }: CompanionSessionPageProps) => {
     const { id } = await params;
-    const companion = await getCompanion(id);
+    const { name, subject, title, topic, duration } = await getCompanion(id);
     const user = await currentUser();
 
     if (!user) redirect('/sign-in');
-    if (!companion) redirect('/companions')
-
-    console.log(companion)
+    if (!name) redirect('/companions')
 
     return (
-        <main>
-            <article className="flex rounded-border justify-between p-6 max-md:flex-col">
-                <div className="flex items-center gap-2">
-                    <div className="size-[72px] flex items-center justify center rounded-lg max-md:hidden" style={{ backgroundColor: getSubjectColor(companion.subject) }}
-                    ></div>
-                    <Image src={`/icons/${companion.subject}.svg`} alt={companion.subject} width={35} height={35} />
-                </div>
-                <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2"></div>
+        <main className="mx-auto max-w-4xl px-4 py-6">
+            <article
+                className="
+          flex items-center justify-between gap-6
+          rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm
+          max-md:flex-col max-md:items-start
+        "
+            >
+                {/* Icon */}
+                <div
+                    className="
+            hidden size-[72px] md:flex items-center justify-center rounded-lg
+          "
+                    style={{ backgroundColor: getSubjectColor(subject) }}
+                >
+                    <Image src={`/icons/${subject}.svg`} alt={subject} width={35} height={35} />
                 </div>
 
+                {/* Title + Subject + Topic */}
+                <div className="flex min-w-0 flex-col gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-2xl font-bold leading-none truncate">{name}</p>
+                        <span className="rounded-full bg-black/90 px-3 py-0.5 text-[12px] font-medium text-white">
+                            {subject}
+                        </span>
+                    </div>
+                    <p className="text-zinc-600 truncate">{topic}</p>
+                </div>
+
+                {/* Duration (right) */}
+                <div
+                    className="
+            ml-auto text-2xl font-medium whitespace-nowrap
+            max-md:ml-0 max-md:text-xl"
+                >
+                    {duration} minutes
+                </div>
             </article>
-        </main >
+        </main>
     );
 }
 
