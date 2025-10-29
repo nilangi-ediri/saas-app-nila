@@ -11,16 +11,13 @@ interface CompanionSessionPageProps {
 
 const CompanionSession = async ({ params }: CompanionSessionPageProps) => {
     const { id } = await params;
-
-    const user = await currentUser();
-    if (!user) redirect('/sign-in');
-
     const companion = await getCompanion(id);
-    if (!companion) {
-        redirect('/companions'); // nothing found, avoid destructuring
-    }
+    const user = await currentUser();
 
-    const { name, subject, title, topic, duration } = companion;
+    const { name, subject, topic, duration } = companion;
+
+    if (!user) redirect('/sign-in');
+    if (!name) redirect('/companions')
 
     return (
         <main className="mx-auto max-w-4xl px-4 py-6">
@@ -64,8 +61,9 @@ const CompanionSession = async ({ params }: CompanionSessionPageProps) => {
             <CompanionComponent
                 {...companion}
                 companionId={id}
-                userName={user.firstName ?? 'User'}
-                userImage={user.imageUrl ?? '/icons/user.svg'}
+                userName={user.firstName!}
+                userImage={user.imageUrl!}
+
             />
         </main>
     );
