@@ -49,13 +49,13 @@ export const getCompanion = async (id: string) => {
         .from('companions')
         .select('*')
         .eq('id', id)
-        .single();             // <- important
+        .single();
 
     if (error) {
         console.error(error);
         return null;
     }
-    return data;             // a single row or null
+    return data;
 };
 
 export const addToSessionHistory = async (companionId: string) => {
