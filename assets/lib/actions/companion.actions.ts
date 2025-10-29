@@ -42,15 +42,21 @@ export const getAllCompanions = async ({ limit = 10, page = 1, subject, topic }:
     return companions;
 }
 
+// assets/lib/actions/companion.actions.ts
 export const getCompanion = async (id: string) => {
     const supabase = createSupabaseClient();
-
     const { data, error } = await supabase
-        .from('companions').select().eq('id', id)
+        .from('companions')
+        .select('*')
+        .eq('id', id)
+        .single();             // <- important
 
-    if (error) return console.log(error);
-    return data[0];
-}
+    if (error) {
+        console.error(error);
+        return null;
+    }
+    return data;             // a single row or null
+};
 
 export const addToSessionHistory = async (companionId: string) => {
     const { userId } = await auth();
