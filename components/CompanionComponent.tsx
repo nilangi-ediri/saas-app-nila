@@ -109,7 +109,7 @@ export default function CompanionComponent({
             serverMessages: [],
         }
 
-        //@ts-expect-error
+
         vapi.start(configureAssistant(voice, style), assistantOverrides)
     }
 
@@ -132,7 +132,7 @@ export default function CompanionComponent({
                                 'absolute transition-opacity duration-1000',
                                 (callStatus === CallStatus.FINISHED || callStatus === CallStatus.INACTIVE) && 'opacity-100',
                                 callStatus === CallStatus.CONNECTING && 'opacity-100 animate-pulse',
-                                callStatus === CallStatus.ACTIVE && (isSpeaking ? 'opacity-0' : 'opacity-100'),
+                                callStatus === CallStatus.ACTIVE && 'opacity-0',
                             )}
                         >
                             <Image

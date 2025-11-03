@@ -76,32 +76,34 @@ export const addToSessionHistory = async (companionId: string) => {
 
 export const getRecentSessions = async (limit = 10) => {
     const supabase = createSupabaseClient();
-    const { data, error } = await supabase.from('session_history')
-        .select(`companions:companion_id (*)`)
+    const { data, error } = await supabase
+        .from('session_history')
+        .select('companions:companion_id (id, subject, name, topic, duration), created_at')
         .order('created_at', { ascending: false })
-        .limit(limit)
+        .limit(limit);
 
-    if (error) {
-        throw new Error(error.message)
-    }
+    if (error) throw new Error(error.message);
 
-    return data.map(({ companions }) => companions);
-}
+    const rows = (data ?? []).map(r => r.companions).filter(Boolean);
+    const unique = Array.from(new Map(rows.map(c => [c.id, c])).values());
+    return unique;
+};
 
 export const getUserSessions = async (userId: string, limit = 10) => {
     const supabase = createSupabaseClient();
-    const { data, error } = await supabase.from('session_history')
-        .select(`companions:companion_id (*)`)
+    const { data, error } = await supabase
+        .from('session_history')
+        .select('companions:companion_id (id, subject, name, topic, duration), created_at')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
-        .limit(limit)
+        .limit(limit);
 
-    if (error) {
-        throw new Error(error.message)
-    }
+    if (error) throw new Error(error.message);
 
-    return data.map(({ companions }) => companions);
-}
+    const rows = (data ?? []).map(r => r.companions).filter(Boolean);
+    const unique = Array.from(new Map(rows.map(c => [c.id, c])).values());
+    return unique;
+};
 
 export const getUserCompanions = async (userId: string) => {
     const supabase = createSupabaseClient();
