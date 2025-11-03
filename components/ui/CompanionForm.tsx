@@ -3,6 +3,7 @@ import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import * as z from "zod"
+import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -38,7 +39,6 @@ import {
 import { subjects } from "@/constants"
 import { Textarea } from "@/components/ui/textarea"
 import { createCompanion } from "@/assets/lib/actions/companion.actions"
-import { redirect } from "next/navigation"
 
 
 
@@ -52,6 +52,9 @@ const formSchema = z.object({
 })
 
 function CompanionForm() {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -66,20 +69,34 @@ function CompanionForm() {
   })
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    const companion = await createCompanion(data);
+    try {
+      setIsSubmitting(true);
+      setError(null);
 
-    if (companion) {
-      redirect(`/companions/${companion.id}`);
-    } else {
-      console.log("Falied to create a companion")
-      redirect('/');
+      const companion = await createCompanion(data);
+
+      if (companion && companion.id) {
+        // Use router.push for client-side navigation
+        router.push(`/companions/${companion.id}`);
+      } else {
+        setError("Failed to create companion. Please try again.");
+        setIsSubmitting(false);
+      }
+    } catch (err) {
+      console.error("Error creating companion:", err);
+      setError(err instanceof Error ? err.message : "An unexpected error occurred. Please try again.");
+      setIsSubmitting(false);
     }
-
   }
 
   return (
 
     <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md">
+          {error}
+        </div>
+      )}
       <FieldGroup>
         <Controller
           name="name"
@@ -253,7 +270,13 @@ function CompanionForm() {
             </Field>
           )}
         />
-        <Button type="submit" className="w-full cursor-pointer">Build Your Companion</Button>
+        <Button
+          type="submit"
+          className="w-full cursor-pointer"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Creating Companion..." : "Build Your Companion"}
+        </Button>
       </FieldGroup>
     </form >
 
