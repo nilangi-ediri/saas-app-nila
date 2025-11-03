@@ -3,7 +3,6 @@ import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import * as z from "zod"
-import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -52,7 +51,6 @@ const formSchema = z.object({
 })
 
 function CompanionForm() {
-  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -73,15 +71,11 @@ function CompanionForm() {
       setIsSubmitting(true);
       setError(null);
 
-      const companion = await createCompanion(data);
-
-      if (companion && companion.id) {
-        // Use router.push for client-side navigation
-        router.push(`/companions/${companion.id}`);
-      } else {
-        setError("Failed to create companion. Please try again.");
-        setIsSubmitting(false);
-      }
+      console.log("Submitting companion data:", data);
+      // Server action now handles redirect internally
+      await createCompanion(data);
+      // If we reach here without redirect, there might be an issue
+      console.log("CreateCompanion completed without redirect");
     } catch (err) {
       console.error("Error creating companion:", err);
       setError(err instanceof Error ? err.message : "An unexpected error occurred. Please try again.");

@@ -2,10 +2,16 @@
 
 import { auth } from "@clerk/nextjs/server"
 import { createSupabaseClient } from "../supabase";
-import { tr } from "zod/locales";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export const createCompanion = async (formData: CreateCompanion) => {
     const { userId: author } = await auth();
+
+    if (!author) {
+        throw new Error('Unauthorized');
+    }
+
     const supabase = createSupabaseClient();
 
     const { data, error } = await supabase
@@ -13,9 +19,19 @@ export const createCompanion = async (formData: CreateCompanion) => {
         .insert({ ...formData, author })
         .select();
 
-    if (error || !data) throw new Error(error?.message || 'Failed to create a companion');
+    if (error || !data || !data[0]) {
+        console.error('Supabase error:', error);
+        throw new Error(error?.message || 'Failed to create a companion');
+    }
 
-    return data[0];
+    const companionId = data[0].id;
+
+    // Revalidate the companions list and the new companion page
+    revalidatePath('/companions');
+    revalidatePath(`/companions/${companionId}`);
+
+    // Redirect from server action
+    redirect(`/companions/${companionId}`);
 }
 
 export const getAllCompanions = async ({ limit = 10, page = 1, subject, topic }: GetAllCompanions) => {
