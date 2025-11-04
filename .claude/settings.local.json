@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(move \"app/companions/new/page.tsx\" \"app/companions/create/page.tsx\")"
     ],
     "deny": [],
     "ask": []
